@@ -1,27 +1,64 @@
 import './App.css';
-import { useState } from 'react';
+import P from 'prop-types'
+import React, {useState, useEffect, useCallback} from'react';
+
+// React.memo will re-render only when has been modified
+const Button = React.memo(function Button({ incrementButton }){
+  console.log("Son's render");
+  return <button onClick={()=> incrementButton(10)}>+</button>
+});
+
+Button.propTypes = {
+  incrementButton: P.func,
+};
 
 function App() {
-  // Declaring a new variable of state, called by "count"
-  const [count, setCount] = useState(0);  // the only arg for useState is the initial state
-  // Another State variables
-  const [age, setAge] = useState(42);
-  const [fruit, setFruit] = useState('banana');
-  const [todos, setTodos] = useState([{ text: 'Learn Hooks'}]);
-
-  // Use effect, similar to ComponentDidMount update and unmount
+  const[count,setCount] = useState(0);
   
-  //Update the doc title  using browser API
-  document.title = `You clicked ${count} times on button`;
-  return (
-    <div className="App">
-      <h2>{todos[0].text}</h2>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click Here  
-      </button>    
+  const incrementCounter = useCallback((num) => {
+    setCount((c) => c + num);
+  }, []);  
+
+  console.log("Father's render");
+  return(
+    <div>
+       <p>Você clicou: {count} vezes</p>
+       <Button incrementButton={incrementCounter}/>
+ 
     </div>
   );
 }
 
 export default App;
+
+
+
+// componentDidUpdate
+  /*
+  useEffect(()=> {
+    console.log("componentDidUpdate"); // Will run at mounting and after each render component
+  });
+  */
+
+  // componentDidMount
+  /*
+  useEffect(() => {
+    console.log("Builded");
+  }, []);
+  
+  // componentDidUpdate with dependencies, just update if have some changes including a state variable
+  useEffect(() => {
+    console.log(`count has been mounted and modified to ${count}`);
+  }, [count]);
+
+  
+
+  useEffect(() => {
+    document.querySelector("p")?.addEventListener("click", eventFunc); // ?. Chaining Operator 
+
+    return () => {
+      document.querySelector("p")?.removeEventListener("click", eventFunc); // ?. Chaining Operator 
+    } 
+  }, []);
+
+  */
